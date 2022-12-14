@@ -60,7 +60,7 @@ const Login = () => {
       if ((response.data[0].type == "admin")) {
         returnUrl = "/admin/assign";
       } else {
-        returnUrl = "/Menu";
+        returnUrl = "/user/assign";
       }
     } else {
       returnUrl = "/";

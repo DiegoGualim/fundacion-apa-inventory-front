@@ -7,6 +7,33 @@ import "../../public/css/ToolTips.module.css";
 const Menu = ({ children }) => {
   const router = useRouter();
 
+  const items = [
+    {
+      label: "Inventario",
+      icon: "pi pi-fw pi-box",
+      items: [
+        {
+          label: "Agregar Categoría",
+          icon: "pi pi-fw pi-book",
+          url: "/user/listCategories",
+        },
+        {
+          label: "Catalogo de Productos",
+          icon: "pi pi-fw pi-cart-plus",
+          url: "/user/catalogueProducts"
+        },
+        {
+          separator: true,
+        },
+        {
+          label: "Registro de Solicitudes",
+          icon: "pi pi-fw pi-shopping-bag",
+          url: "/user/assign",
+        },
+      ],
+    },
+  ];
+
   const endSession = () => {
     router.push("/");
   };
@@ -26,7 +53,7 @@ const Menu = ({ children }) => {
   return (
     <div>
       <div className="card">
-        <Menubar /* model={items} */ start={start} end={end} />
+        <Menubar model={items} start={start} end={end} />
         {children}
       </div>
     </div>
