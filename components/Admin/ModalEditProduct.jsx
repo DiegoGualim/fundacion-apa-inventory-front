@@ -187,6 +187,7 @@ const ModalEditProduct = ({ props, getAllDataProducts }) => {
                 type="number"
                 id="stock"
                 name="stock"
+                readOnly
                 onChange={(e) => hadleChange(e.target.name, e.target.value)}
                 placeholder={props.stock + " unidades"}
               />

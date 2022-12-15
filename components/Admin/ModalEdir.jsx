@@ -3,14 +3,27 @@ import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { updateCategory } from "../../Routes/api.routes";
+import { Dropdown } from "primereact/dropdown";
 import "../../public/css/ToolTips.module.css";
 
-const ModalEdit = ({ id, nameCategory, getAllDataCategorys }) => {
+const ModalEdit = ({ id, nameCategory, getAllDataCategorys, clinic }) => {
   const [displayBasic, setDisplayBasic] = useState(false);
+  const [selectClinic, setSelectClinic] = useState({
+    name: "",
+    tipo_clinica: "",
+  });
   const [newDataCategory, setNewDataCategory] = useState({
     id: id,
     nombre_categoria: "",
   });
+
+  const clinicType = [
+    { name: "Oftalmologia", tipo_clinica: "Oftalmologia" },
+    { name: "Fisioterapia", tipo_clinica: "Fisioterapia" },
+    { name: "Audiologia", tipo_clinica: "Audiologia" },
+    { name: "Medicina General", tipo_clinica: "Medicina General" },
+    { name: "Ecocardiograma", tipo_clinica: "Ecocardiograma" },
+  ];
 
   const dialogFuncMap = {
     displayBasic: setDisplayBasic,
@@ -31,13 +44,50 @@ const ModalEdit = ({ id, nameCategory, getAllDataCategorys }) => {
     });
   };
 
+  const onClinicChange = (e) => {
+    setSelectClinic(e.value);
+  };
+
+  const selectClinicTemplate = (option, props) => {
+    if (option) {
+      return (
+        <div className="country-item country-item-value">
+          <div>{option.name}</div>
+        </div>
+      );
+    }
+
+    return <span>{props.placeholder}</span>;
+  };
+
+  const clinicOptionTemplate = (option) => {
+    return (
+      <div className="country-item">
+        <div>{option.name}</div>
+      </div>
+    );
+  };
+
   const editCategory = async (name) => {
-    const response = await updateCategory(newDataCategory);
-    if (response.success) {
-      getAllDataCategorys();
-      onHide(name);
-    } else {
-      alert(response.message);
+    try {
+      if (selectClinic.tipo_clinica == "") {
+        alert("El área esta vacia");
+      } else {
+        const data ={
+          id: newDataCategory.id,
+          nombre_categoria: newDataCategory.nombre_categoria,
+          tipo_clinica: selectClinic.tipo_clinica
+        }
+        const response = await updateCategory(data);
+        if (response.success) {
+          getAllDataCategorys();
+          onHide(name);
+        } else {
+          alert(response.message);
+        }
+      }
+    } catch (e) {
+      alert("Por favor seleccione un área");
     }
   };
 
@@ -90,6 +140,22 @@ const ModalEdit = ({ id, nameCategory, getAllDataCategorys }) => {
                 name="nombre_categoria"
                 onChange={(e) => hadleChange(e.target.name, e.target.value)}
                 placeholder={nameCategory}
+              />
+            </div>
+          </div>
+          <div className="col-12 md:col-12">
+            <div className="p-inputgroup">
+              <Dropdown
+                value={selectClinic}
+                options={clinicType}
+                onChange={onClinicChange}
+                optionLabel="name"
+                filter
+                showClear
+                filterBy="name"
+                placeholder={"Seleccionar Área: Area Actual " + clinic}
+                valueTemplate={selectClinicTemplate}
+                itemTemplate={clinicOptionTemplate}
               />
             </div>
           </div>

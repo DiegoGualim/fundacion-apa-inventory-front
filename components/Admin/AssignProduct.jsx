@@ -66,7 +66,7 @@ const AssignProduct = () => {
 
   const hadleChange = (values, properties) => {
     const index = products.map((product) => product.id).indexOf(properties.id);
-    if(values == ''){
+    if (values == "") {
       products[index].variableStock = products[index].stock;
     }
     let stockEntrante = products[index].stock;
@@ -81,7 +81,7 @@ const AssignProduct = () => {
       setValid(false);
       alert("No hay suficiente");
     } else {
-      products[index].variableStock  = newStock;
+      products[index].variableStock = newStock;
       setValid(true);
     }
     let _products = [...products];
@@ -179,6 +179,11 @@ const AssignProduct = () => {
           });
         });
         alert(result.message);
+        setDatatotal();
+        setNameProv({
+          area_solicito: "",
+          usuario_solicito: "",
+        });
         setProducts([]);
       } else {
         alert(result.message);

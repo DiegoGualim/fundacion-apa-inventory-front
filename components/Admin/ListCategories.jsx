@@ -24,6 +24,7 @@ const ListCategories = () => {
         <ModalEdit
           id={props.id}
           nameCategory={props.nombre_categoria}
+          clinic={props.tipo_clinica}
           getAllDataCategorys={getAllDataCategorys}
         />
         &ensp; &ensp;
@@ -65,6 +66,12 @@ const ListCategories = () => {
             align="center"
             field="nombre_categoria"
             header="Nombre de Categoria"
+          />
+          <Column
+            sortable
+            align="center"
+            field="tipo_clinica"
+            header="Área"
           />
           <Column field="" align="left" header="Acciones" body={bActions} />
         </DataTable>
