@@ -15,6 +15,7 @@ const ModalCreateProduct = ({ getAllDataProducts }) => {
     unidad_medida: "",
     fecha_expiracion: "",
     stock: "",
+    cargaStock: 0,
     precio: "",
     codigo_producto: "",
     codigo_barras: "",

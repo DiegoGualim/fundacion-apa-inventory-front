@@ -5,11 +5,17 @@ import { DataTable } from "primereact/datatable";
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { InputText } from "primereact/inputtext";
+import { Checkbox } from "primereact/checkbox";
 
 const AssignProduct = () => {
   const [products, setProducts] = useState([]);
   const [auxProducts, setAuxProducts] = useState([]);
   const [dataSend, setDataSend] = useState([]);
+  const [checked, setChecked] = useState(false);
+  const [selectClinic, setSelectClinic] = useState({
+    name: "",
+    tipo_clinica: "",
+  });
   const [nameProv, setNameProv] = useState({
     area_solicito: "",
     usuario_solicito: "",
@@ -22,6 +28,13 @@ const AssignProduct = () => {
   const [changes, setChanges] = useState(false);
   let productElement = [];
   let stockSaliente = 0;
+  const clinicType = [
+    { name: "Oftalmologia", tipo_clinica: "Oftalmologia" },
+    { name: "Fisioterapia", tipo_clinica: "Fisioterapia" },
+    { name: "Audiologia", tipo_clinica: "Audiologia" },
+    { name: "Medicina General", tipo_clinica: "Medicina General" },
+    { name: "Ecocardiograma", tipo_clinica: "Ecocardiograma" },
+  ];
   const cols = [
     { field: "nombre_producto", header: "Nombre producto" },
     { field: "cantidad", header: "Cantidad" },
@@ -44,6 +57,7 @@ const AssignProduct = () => {
       variableStock: getProduct[i].stock,
       cantidad: 0,
       total: 0,
+      codigo_barras: getProduct[i].codigo_barras,
       usuario_solicito: "",
     });
   }
@@ -156,38 +170,44 @@ const AssignProduct = () => {
   };
 
   const exportPdf = async () => {
-    if (nameProv == "") {
-      alert("Llenar Nombre Cliente");
-    } else if (valid == false) {
-      alert("Revisar campos de unidades en bodega");
-    } else if (products.length == 0) {
-      alert("No hay elementos");
-    } else {
-      const data = {
-        usuario_solicito: nameProv.usuario_solicito,
-        total: dataTotal,
-        area_solicito: nameProv.area_solicito,
-        detalleSolicitud: dataSend,
-      };
-      const result = await createRequest(data);
-      if (result.success) {
-        import("jspdf").then((jsPDF) => {
-          import("jspdf-autotable").then(() => {
-            const doc = new jsPDF.default(0, 0);
-            doc.autoTable(exportColumns, products);
-            doc.save("products.pdf");
-          });
-        });
-        alert(result.message);
-        setDatatotal();
-        setNameProv({
-          area_solicito: "",
-          usuario_solicito: "",
-        });
-        setProducts([]);
+    try {
+      if (selectClinic.tipo_clinica == "") {
+        alert("Llenar área de solicitud");
+      } else if (nameProv.usuario_solicito == "") {
+        alert("Llenar el nombre del solicitante");
+      } else if (valid == false) {
+        alert("Revisar campos de unidades en bodega");
+      } else if (products.length == 0) {
+        alert("No hay elementos");
       } else {
-        alert(result.message);
+        const data = {
+          usuario_solicito: nameProv.usuario_solicito,
+          total: dataTotal,
+          area_solicito: selectClinic.tipo_clinica,
+          detalleSolicitud: dataSend,
+        };
+        const result = await createRequest(data);
+        if (result.success) {
+          import("jspdf").then((jsPDF) => {
+            import("jspdf-autotable").then(() => {
+              const doc = new jsPDF.default(0, 0);
+              doc.autoTable(exportColumns, products);
+              doc.save("products.pdf");
+            });
+          });
+          alert(result.message);
+          setDatatotal();
+          setNameProv({
+            area_solicito: "",
+            usuario_solicito: "",
+          });
+          setProducts([]);
+        } else {
+          alert(result.message);
+        }
       }
+    } catch (e) {
+      alert("Debe de Seleccionar un área");
     }
   };
 
@@ -221,6 +241,30 @@ const AssignProduct = () => {
     );
   };
 
+  const onClinicChange = (e) => {
+    setSelectClinic(e.value);
+  };
+
+  const selectClinicTemplate = (option, props) => {
+    if (option) {
+      return (
+        <div className="country-item country-item-value">
+          <div>{option.name}</div>
+        </div>
+      );
+    }
+
+    return <span>{props.placeholder}</span>;
+  };
+
+  const clinicOptionTemplate = (option) => {
+    return (
+      <div className="country-item">
+        <div>{option.name}</div>
+      </div>
+    );
+  };
+
   const bActionsPrice = (props) => {
     return inputPrice(props);
   };
@@ -248,7 +292,15 @@ const AssignProduct = () => {
         }}
       >
         <div className="col-12 md:col-6">
-          <div className="p-inputgroup">
+          <div className="field-checkbox">
+            <Checkbox
+              inputId="binary"
+              checked={checked}
+              onChange={(e) => setChecked(e.checked)}
+            />
+            <label htmlFor="binary">Cambiar por Codigo de Barras</label>
+          </div>
+          <div className={checked ? "p-inputgroup hidden" : "p-inputgroup"}>
             <Dropdown
               value={productSave}
               options={productElement}
@@ -271,13 +323,42 @@ const AssignProduct = () => {
               onClick={list}
             />
           </div>
+          <div className={checked ? "p-inputgroup" : "p-inputgroup hidden"}>
+            <Dropdown
+              value={productSave}
+              options={productElement}
+              onChange={onProductChange}
+              optionLabel="nombre_producto"
+              filter
+              showClear
+              filterBy="codigo_barras"
+              placeholder="Seleccionar Producto"
+            />
+            <Button
+              className="p-button-success"
+              tooltip="Agregar Producto"
+              tooltipOptions={{
+                position: "bottom",
+                mouseTrack: true,
+                mouseTrackTop: 15,
+              }}
+              icon="pi pi-plus"
+              onClick={list}
+            />
+          </div>
         </div>
         &ensp; &ensp; &ensp; &ensp;
-        <InputText
-          id="area_solicito"
-          name="area_solicito"
-          placeholder="Área Solicitante"
-          onChange={(e) => hadleChangeInput(e.target.name, e.target.value)}
+        <Dropdown
+          value={selectClinic}
+          options={clinicType}
+          onChange={onClinicChange}
+          optionLabel="name"
+          filter
+          showClear
+          filterBy="name"
+          placeholder="Seleccionar Área"
+          valueTemplate={selectClinicTemplate}
+          itemTemplate={clinicOptionTemplate}
         />
         &ensp; &ensp; &ensp; &ensp;
         <InputText

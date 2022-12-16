@@ -16,6 +16,7 @@ const ModalEditProduct = ({ props, getAllDataProducts }) => {
     unidad_medida: "",
     fecha_expiracion: "",
     stock: "",
+    cargaStock: 0,
     precio: "",
     codigo_producto: "",
     codigo_barras: "",
@@ -36,10 +37,18 @@ const ModalEditProduct = ({ props, getAllDataProducts }) => {
   };
 
   const hadleChange = (name, values) => {
-    setNewDataProduct({
-      ...newDataProduct,
-      [name]: values,
-    });
+    if (name == "cargaStock") {
+      setNewDataProduct({
+        ...newDataProduct,
+        cargaStock: values,
+        stock: Number(values) + props.stock,
+      });
+    } else {
+      setNewDataProduct({
+        ...newDataProduct,
+        [name]: values,
+      });
+    }
   };
 
   const onCategoryChange = (e) => {
@@ -52,10 +61,21 @@ const ModalEditProduct = ({ props, getAllDataProducts }) => {
 
   const editProduct = async (name) => {
     const response = await updateProducts(newDataProduct);
-    console.log(response);
     if (response.success) {
       getAllDataCategorys();
       getAllDataProducts();
+      setNewDataProduct({
+        id: props.id,
+        nombre_producto: "",
+        unidad_medida: "",
+        fecha_expiracion: "",
+        stock: "",
+        cargaStock: 0,
+        precio: "",
+        codigo_producto: "",
+        codigo_barras: "",
+        id_categoria: "",
+      });
       onHide(name);
     } else {
       alert(response.message);
@@ -132,7 +152,7 @@ const ModalEditProduct = ({ props, getAllDataProducts }) => {
             </div>
           </div>
 
-          <div className="col-12 md:col-6">
+          <div className="col-12 md:col-4">
             <h5>Codigo Barras</h5>
             <div className="p-inputgroup">
               <span className="p-inputgroup-addon">
@@ -147,7 +167,7 @@ const ModalEditProduct = ({ props, getAllDataProducts }) => {
             </div>
           </div>
 
-          <div className="col-12 md:col-6">
+          <div className="col-12 md:col-4">
             <h5>Codigo Producto</h5>
             <div className="p-inputgroup">
               <span className="p-inputgroup-addon">
@@ -178,6 +198,22 @@ const ModalEditProduct = ({ props, getAllDataProducts }) => {
           </div>
 
           <div className="col-12 md:col-4">
+            <h5>Entranda Productos</h5>
+            <div className="p-inputgroup">
+              <span className="p-inputgroup-addon">
+                <i className="pi pi-inbox"></i>
+              </span>
+              <InputText
+                type="number"
+                id="cargaStock"
+                name="cargaStock"
+                onChange={(e) => hadleChange(e.target.name, e.target.value)}
+                placeholder={"0 unidades"}
+              />
+            </div>
+          </div>
+
+          <div className="col-12 md:col-4">
             <h5>Existencia</h5>
             <div className="p-inputgroup">
               <span className="p-inputgroup-addon">
@@ -189,7 +225,11 @@ const ModalEditProduct = ({ props, getAllDataProducts }) => {
                 name="stock"
                 readOnly
                 onChange={(e) => hadleChange(e.target.name, e.target.value)}
-                placeholder={props.stock + " unidades"}
+                placeholder={
+                  Number(newDataProduct.cargaStock) +
+                  Number(props.stock) +
+                  " unidades"
+                }
               />
             </div>
           </div>
