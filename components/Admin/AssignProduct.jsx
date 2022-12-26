@@ -29,11 +29,12 @@ const AssignProduct = () => {
   let productElement = [];
   let stockSaliente = 0;
   const clinicType = [
-    { name: "Oftalmologia", tipo_clinica: "Oftalmologia" },
+    { name: "Oftalmología", tipo_clinica: "Oftalmologia" },
     { name: "Fisioterapia", tipo_clinica: "Fisioterapia" },
-    { name: "Audiologia", tipo_clinica: "Audiologia" },
+    { name: "Audiología", tipo_clinica: "Audiologia" },
     { name: "Medicina General", tipo_clinica: "Medicina General" },
     { name: "Ecocardiograma", tipo_clinica: "Ecocardiograma" },
+    { name: "Odontología", tipo_clinica: "Odontología" },
   ];
   const cols = [
     { field: "nombre_producto", header: "Nombre producto" },
