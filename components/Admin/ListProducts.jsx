@@ -1,16 +1,21 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
-import { getAllProducts } from "../../Routes/api.routes";
+import { getAllProducts, getAllCategories } from "../../Routes/api.routes";
 import ModalEditProduct from "./ModalEditProduct";
 import ModalDeleteProduct from "./ModalDeleteProduct";
 import ModalCreateProduct from "./ModalCreateProduct";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { FilterMatchMode, FilterOperator } from "primereact/api";
+import RenderListProduct from "./RenderListProduct";
 
 const ListProducts = () => {
+  let n = 0;
   const [product, setProduct] = useState([]);
+  const [getCategory, setGetCategory] = useState([]);
+  let categoryElement = [];
+  const [isLoading, setLoading] = useState(true);
   const [globalFilterValue, setGlobalFilterValue] = useState("");
   const [generation, setGeneration] = useState(false);
   const [filters, setFilters] = useState({
@@ -53,13 +58,44 @@ const ListProducts = () => {
     { field: "codigo_barras", header: "Codigo de Barras" },
   ];
 
+
+  const getAllDataCategorys = useCallback(async () => {
+    const response = await getAllCategories();
+    setGetCategory(response);
+    console.log(response)
+  }, []);
+
+  for (let i = 0; i < getCategory.length; i++) {
+    categoryElement.push({
+      id: getCategory[i].id,
+      nombre_categoria: getCategory[i].nombre_categoria,
+    });
+  }
+
   const getAllDataProducts = useCallback(async () => {
-    const response = await getAllProducts();
-    setProduct(response);
+    try {
+      const response = await getAllProducts();
+      console.log(response)
+      if (response.errno == 1135) {
+        n++;
+        console.log("Intentando: " + n);
+        setTimeout(() => {
+          getAllDataProducts();
+        }, 10000);
+      } else {
+        setProduct(response);
+        setLoading(false);
+      }
+    } catch (error) {
+      window.location.reload(true);
+    }
   }, []);
 
   useEffect(() => {
-    getAllDataProducts();
+    setTimeout(() => {
+      getAllDataProducts();
+    }, 10000);
+    getAllDataCategorys();
   }, []);
 
   const buttons = (props) => {
@@ -68,6 +104,8 @@ const ListProducts = () => {
         <ModalEditProduct
           props={props}
           getAllDataProducts={getAllDataProducts}
+          categoryElement={categoryElement}
+          getAllDataCategorys={getAllDataCategorys}
         />
         &ensp; &ensp;
         <ModalDeleteProduct
@@ -152,75 +190,90 @@ const ListProducts = () => {
     </div>
   );
 
+  if (isLoading) {
+    return <div>Cargando...</div>;
+  } else {
+    return (
+      <RenderListProduct
+        product={product}
+        header={header}
+        filters={filters}
+        renderPrice={renderPrice}
+        bActions={bActions}
+      />
+    );
+  }
+
   return (
-    <div className="datatable-templating-demo">
-      <div className="card">
-        <DataTable
-          value={product}
-          header={header}
-          filters={filters}
-          filterDisplay="menu"
-          responsiveLayout="scroll"
-          globalFilterFields={[
-            "nombre_producto",
-            "nombre_categoria",
-            "unidad_medida",
-            "fecha_expiracion",
-            "precio",
-            "codigo_producto",
-            "codigo_barras",
-          ]}
-          emptyMessage="No se encontro el producto."
-        >
-          <Column sortable align="center" field="id" header="No." />
-          <Column
-            sortable
-            align="center"
-            field="nombre_producto"
-            header="Producto"
-          />
-          <Column
-            sortable
-            align="center"
-            field="nombre_categoria"
-            header="Categoria"
-          />
-          <Column
-            sortable
-            align="center"
-            field="unidad_medida"
-            header="Unidad de Medida"
-          />
-          <Column
-            sortable
-            align="center"
-            field="fecha_expiracion"
-            header="Fecha"
-          />
-          <Column sortable align="center" field="stock" header="Unidades" />
-          <Column
-            sortable
-            align="center"
-            field="precio"
-            header="Precio"
-            body={renderPrice}
-          />
-          <Column
-            sortable
-            align="center"
-            field="codigo_producto"
-            header="Codigo Producto"
-          />
-          <Column
-            sortable
-            align="center"
-            field="codigo_barras"
-            header="Codigo Barras"
-          />
-          <Column field="" align="center" header="Acciones" body={bActions} />
-        </DataTable>
-      </div>
+    /*     <div className="datatable-templating-demo">
+    <div className="card">
+      <DataTable
+        value={product}
+        header={header}
+        filters={filters}
+        filterDisplay="menu"
+        responsiveLayout="scroll"
+        globalFilterFields={[
+          "nombre_producto",
+          "nombre_categoria",
+          "unidad_medida",
+          "fecha_expiracion",
+          "precio",
+          "codigo_producto",
+          "codigo_barras",
+        ]}
+        emptyMessage="No se encontro el producto."
+      >
+        <Column sortable align="center" field="id" header="No." />
+        <Column
+          sortable
+          align="center"
+          field="nombre_producto"
+          header="Producto"
+        />
+        <Column
+          sortable
+          align="center"
+          field="nombre_categoria"
+          header="Categoria"
+        />
+        <Column
+          sortable
+          align="center"
+          field="unidad_medida"
+          header="Unidad de Medida"
+        />
+        <Column
+          sortable
+          align="center"
+          field="fecha_expiracion"
+          header="Fecha"
+        />
+        <Column sortable align="center" field="stock" header="Unidades" />
+        <Column
+          sortable
+          align="center"
+          field="precio"
+          header="Precio"
+          body={renderPrice}
+        />
+        <Column
+          sortable
+          align="center"
+          field="codigo_producto"
+          header="Codigo Producto"
+        />
+        <Column
+          sortable
+          align="center"
+          field="codigo_barras"
+          header="Codigo Barras"
+        />
+        <Column field="" align="center" header="Acciones" body={bActions} />
+      </DataTable>
     </div>
+  </div> */
+    <></>
   );
 };
 

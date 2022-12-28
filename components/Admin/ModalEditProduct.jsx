@@ -6,12 +6,11 @@ import { Dropdown } from "primereact/dropdown";
 import { getAllCategories, updateProducts } from "../../Routes/api.routes";
 import "../../public/css/ToolTips.module.css";
 
-const ModalEditProduct = ({ props, getAllDataProducts }) => {
+const ModalEditProduct = ({ props, getAllDataProducts, categoryElement, getAllDataCategorys }) => {
   const [displayBasic, setDisplayBasic] = useState(false);
   const [categorySave, setCategorySave] = useState(props.id_categoria);
   const [getCategory, setGetCategory] = useState([]);
   const [newDataProduct, setNewDataProduct] = useState({
-    id: props.id,
     nombre_producto: "",
     unidad_medida: "",
     fecha_expiracion: "",
@@ -22,7 +21,7 @@ const ModalEditProduct = ({ props, getAllDataProducts }) => {
     codigo_barras: "",
     id_categoria: "",
   });
-  let categoryElement = [];
+  /* let categoryElement = []; */
 
   const dialogFuncMap = {
     displayBasic: setDisplayBasic,
@@ -60,12 +59,28 @@ const ModalEditProduct = ({ props, getAllDataProducts }) => {
   };
 
   const editProduct = async (name) => {
-    const response = await updateProducts(newDataProduct);
+    console.log(newDataProduct);
+
+    const dataSend = {
+      id: props.id,
+      nombre_producto: newDataProduct.nombre_producto,
+      unidad_medida: newDataProduct.unidad_medida,
+      fecha_expiracion: newDataProduct.fecha_expiracion,
+      stock: newDataProduct.stock,
+      cargaStock: newDataProduct.cargaStock,
+      precio: newDataProduct.precio,
+      codigo_producto: newDataProduct.codigo_producto,
+      codigo_barras: newDataProduct.codigo_barras,
+      id_categoria: newDataProduct.id_categoria,
+    };
+    const response = await updateProducts(dataSend);
+
+    /* console.log(dataSend); */
     if (response.success) {
       getAllDataCategorys();
       getAllDataProducts();
       setNewDataProduct({
-        id: props.id,
+        id: "",
         nombre_producto: "",
         unidad_medida: "",
         fecha_expiracion: "",
@@ -81,22 +96,6 @@ const ModalEditProduct = ({ props, getAllDataProducts }) => {
       alert(response.message);
     }
   };
-
-  const getAllDataCategorys = useCallback(async () => {
-    const response = await getAllCategories();
-    setGetCategory(response);
-  }, []);
-
-  for (let i = 0; i < getCategory.length; i++) {
-    categoryElement.push({
-      id: getCategory[i].id,
-      nombre_categoria: getCategory[i].nombre_categoria,
-    });
-  }
-
-  useEffect(() => {
-    getAllDataCategorys();
-  }, []);
 
   const renderFooter = (name) => {
     return (
