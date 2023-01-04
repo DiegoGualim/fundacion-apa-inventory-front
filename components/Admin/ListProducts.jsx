@@ -53,6 +53,7 @@ const ListProducts = () => {
     { field: "nombre_categoria", header: "Categoria" },
     { field: "unidad_medida", header: "Unidad Medida" },
     { field: "fecha_expiracion", header: "Fecha de Expiración" },
+    { field: "stock", header: "Stock" },
     { field: "precio", header: "Precio" },
     { field: "codigo_producto", header: "Codigo Producto" },
     { field: "codigo_barras", header: "Codigo de Barras" },
@@ -62,7 +63,6 @@ const ListProducts = () => {
   const getAllDataCategorys = useCallback(async () => {
     const response = await getAllCategories();
     setGetCategory(response);
-    console.log(response)
   }, []);
 
   for (let i = 0; i < getCategory.length; i++) {
@@ -75,7 +75,6 @@ const ListProducts = () => {
   const getAllDataProducts = useCallback(async () => {
     try {
       const response = await getAllProducts();
-      console.log(response)
       if (response.errno == 1135) {
         n++;
         console.log("Intentando: " + n);
@@ -127,7 +126,11 @@ const ListProducts = () => {
     import("jspdf").then((jsPDF) => {
       import("jspdf-autotable").then(() => {
         const doc = new jsPDF.default(0, 0);
-        doc.autoTable(exportColumns, product);
+        doc.autoTable(exportColumns, product,{
+          styles: {
+              fontSize: 6
+          },
+      });
         setGeneration(false);
         doc.save("Productos en Existencia.pdf");
       });
