@@ -61,13 +61,19 @@ const CategorySale = () => {
   const getDataSaleNormal = async () => {
     const result = await getCategorySaleReportData(date1);
     setDataNormal(result);
+    console.log(result);
   };
 
   const getDataSale = async () => {
     setGeneration(true);
     const result = await getCategorySaleReportData(date1);
-    setData(result);
-    exportPdf(result);
+    
+    if(result.errno == 1064){
+      alert('Hubo un error');
+    }else{
+      setData(result);
+      exportPdf(result);
+    }
   };
 
   useEffect(() => {

@@ -51,6 +51,7 @@ const ListProducts = () => {
     { field: "id", header: "No." },
     { field: "nombre_producto", header: "Nombre Producto" },
     { field: "nombre_categoria", header: "Categoria" },
+    { field: "tipo_clinica", header: "Área" },
     { field: "unidad_medida", header: "Unidad Medida" },
     { field: "fecha_expiracion", header: "Fecha de Expiración" },
     { field: "stock", header: "Stock" },
@@ -58,7 +59,6 @@ const ListProducts = () => {
     { field: "codigo_producto", header: "Codigo Producto" },
     { field: "codigo_barras", header: "Codigo de Barras" },
   ];
-
 
   const getAllDataCategorys = useCallback(async () => {
     const response = await getAllCategories();
@@ -126,11 +126,11 @@ const ListProducts = () => {
     import("jspdf").then((jsPDF) => {
       import("jspdf-autotable").then(() => {
         const doc = new jsPDF.default(0, 0);
-        doc.autoTable(exportColumns, product,{
+        doc.autoTable(exportColumns, product, {
           styles: {
-              fontSize: 6
+            fontSize: 6,
           },
-      });
+        });
         setGeneration(false);
         doc.save("Productos en Existencia.pdf");
       });
@@ -207,77 +207,7 @@ const ListProducts = () => {
     );
   }
 
-  return (
-    /*     <div className="datatable-templating-demo">
-    <div className="card">
-      <DataTable
-        value={product}
-        header={header}
-        filters={filters}
-        filterDisplay="menu"
-        responsiveLayout="scroll"
-        globalFilterFields={[
-          "nombre_producto",
-          "nombre_categoria",
-          "unidad_medida",
-          "fecha_expiracion",
-          "precio",
-          "codigo_producto",
-          "codigo_barras",
-        ]}
-        emptyMessage="No se encontro el producto."
-      >
-        <Column sortable align="center" field="id" header="No." />
-        <Column
-          sortable
-          align="center"
-          field="nombre_producto"
-          header="Producto"
-        />
-        <Column
-          sortable
-          align="center"
-          field="nombre_categoria"
-          header="Categoria"
-        />
-        <Column
-          sortable
-          align="center"
-          field="unidad_medida"
-          header="Unidad de Medida"
-        />
-        <Column
-          sortable
-          align="center"
-          field="fecha_expiracion"
-          header="Fecha"
-        />
-        <Column sortable align="center" field="stock" header="Unidades" />
-        <Column
-          sortable
-          align="center"
-          field="precio"
-          header="Precio"
-          body={renderPrice}
-        />
-        <Column
-          sortable
-          align="center"
-          field="codigo_producto"
-          header="Codigo Producto"
-        />
-        <Column
-          sortable
-          align="center"
-          field="codigo_barras"
-          header="Codigo Barras"
-        />
-        <Column field="" align="center" header="Acciones" body={bActions} />
-      </DataTable>
-    </div>
-  </div> */
-    <></>
-  );
+  return <></>;
 };
 
 export default ListProducts;

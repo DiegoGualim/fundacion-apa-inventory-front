@@ -39,6 +39,12 @@ const RenderListProduct = ({product, header, filters, renderPrice, bActions}) =>
           <Column
             sortable
             align="center"
+            field="tipo_clinica"
+            header="Área"
+          />
+          <Column
+            sortable
+            align="center"
             field="unidad_medida"
             header="Unidad de Medida"
           />
