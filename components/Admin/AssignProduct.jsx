@@ -188,6 +188,7 @@ const AssignProduct = () => {
           detalleSolicitud: dataSend,
         };
         const result = await createRequest(data);
+        console.log(result);
         if (result.success) {
           import("jspdf").then((jsPDF) => {
             import("jspdf-autotable").then(() => {
@@ -196,7 +197,7 @@ const AssignProduct = () => {
               doc.save("products.pdf");
             });
           });
-          alert(result.message);
+          alert("Salida de productos procesada de manera correcta!");
           setDatatotal();
           setNameProv({
             area_solicito: "",
@@ -204,7 +205,7 @@ const AssignProduct = () => {
           });
           setProducts([]);
         } else {
-          alert(result.message);
+          alert("Ocurrio un error favor de tomar captura y eviar al supervisor");
         }
       }
     } catch (e) {
