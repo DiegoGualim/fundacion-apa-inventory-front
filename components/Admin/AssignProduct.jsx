@@ -195,9 +195,12 @@ const AssignProduct = () => {
               const doc = new jsPDF.default(0, 0);
               doc.autoTable(exportColumns, products);
               doc.save("products.pdf");
+              alert("Salida de productos procesada de manera correcta!");
+              setTimeout(() => {
+                window.location.reload();
+              }, 1000);
             });
           });
-          alert("Salida de productos procesada de manera correcta!");
           setDatatotal();
           setNameProv({
             area_solicito: "",
@@ -205,7 +208,9 @@ const AssignProduct = () => {
           });
           setProducts([]);
         } else {
-          alert("Ocurrio un error favor de tomar captura y eviar al supervisor");
+          alert(
+            "Ocurrio un error favor de tomar captura y eviar al supervisor"
+          );
         }
       }
     } catch (e) {
